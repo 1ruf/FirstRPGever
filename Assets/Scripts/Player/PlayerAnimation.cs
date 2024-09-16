@@ -7,7 +7,7 @@ public class PlayerAnimation : MonoBehaviour
     private Animator animator;
     private void Awake()
     {
-        animator = GetComponent<Animator>();
+        animator = GetComponentInChildren<Animator>();
     }
     public enum animationType
     {

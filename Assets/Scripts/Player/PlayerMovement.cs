@@ -14,7 +14,8 @@ public class PlayerMovement : MonoBehaviour
 
 
 
-    private bool wtfTesting;
+    private bool animChanging;
+    private bool animPlaying;
     private void Awake()
     {
         plrAnim = GetComponentInChildren<PlayerAnimation>();
@@ -23,26 +24,46 @@ public class PlayerMovement : MonoBehaviour
     }
     private void IsSameValue(float value)
     {
-        if (value == beforeValue)
+        animChanging = (value == beforeValue) ? false : true; //들어온값이 이전 저장값과 다르면 false 
+        if (animChanging!) //들어온값이 이 전 저장된 값과 다르면
         {
-            if (Mathf.Abs(_rigid.velocity.x) > 2.5f)
+            animPlaying = true;
+            beforeValue = value;
+        }
+        if (animPlaying)
+        {
+            if (Mathf.Abs(value) > 3.5f)
             {
+                print("run");
+                plrAnim.PlayAnim(PlayerAnimation.animationType.Run);
+            }
+            else if (Mathf.Abs(value) > 2.5f)
+            {
+                print("walk");
                 plrAnim.PlayAnim(PlayerAnimation.animationType.Walk);
             }
             else
             {
-                //Idle
+                plrAnim.PlayAnim(PlayerAnimation.animationType.Idle);
             }
+            animPlaying = false;
         }
-        else
+    }
+    private void checkFlip()
+    {
+        if (_rigid.velocity.x > 0)
         {
-            beforeValue = value;
-            //움직이고있는
+            transform.rotation = Quaternion.Euler(0, 0, 0);
+        }
+        else if (_rigid.velocity.x < 0)
+        {
+            transform.rotation = Quaternion.Euler(0, 180, 0);
         }
     }
     private void FixedUpdate()
     {
-        IsSameValue(plrInput.plrDir.x);
+        checkFlip();
         _rigid.velocity = (plrInput.plrDir.normalized * walkSpd) * plrInput.sprint;
+        IsSameValue(_rigid.velocity.x);
     }
 }
